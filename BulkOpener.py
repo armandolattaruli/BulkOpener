@@ -1,22 +1,33 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 import time
 
-# Driver settings
-options = Options()
-options.add_argument("--start-maximized") 
+def open_ip_links(ip_list):
+    base_urls = [
+        "https://www.virustotal.com/gui/ip-address/{}",
+        "https://www.abuseipdb.com/check/{}"
+    ]
+    
+    options = Options()
+    # Remove headless mode to see the browser opening
+    # options.add_argument("--headless")
+    
+    driver = webdriver.Chrome(service=Service(), options=options)
+    driver.get("https://www.google.com")  # Open an initial tab
+    
+    for ip in ip_list.split("\n"):
+        ip = ip.strip()
+        if ip:
+            for url in base_urls:
+                new_tab_script = f"window.open('{url.format(ip)}', '_blank');"
+                driver.execute_script(new_tab_script)
+                time.sleep(2)  # Allow page to load
+    
+    driver.quit()  # Close the browser after finishing
 
-
-# chromedriver path
-service = Service(executable_path="chromedriver.exe")
-driver = webdriver.Chrome(service=service, options=options)
-
-driver.get("https://www.google.com/")
-
-time.sleep(5)  
-driver.quit()  
+# Example usage:
+ip_addresses = """192.168.1.1
+8.8.8.8
+1.1.1.1"""
+open_ip_links(ip_addresses)
