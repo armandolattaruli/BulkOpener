@@ -3,6 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 import time
+import os
 
 def open_ip_links(file_path):
     base_urls = [
@@ -29,6 +30,14 @@ def open_ip_links(file_path):
     except FileNotFoundError:
         print(f"Error: The file {file_path} was not found.")
     
+    print("Browser will remain open. Close it manually when done.")
+    try:
+        driver.wait_for_window_to_close()
+    except:
+        pass  # Exit loop if the browser is closed
+
+    print("Browser closed. Exiting script.")
+    os._exit(0)  # Forcefully exit the script when the browser is closed
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
